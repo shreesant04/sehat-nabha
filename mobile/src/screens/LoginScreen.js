@@ -6,43 +6,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
+  SafeAreaView,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-
-const translations = {
-  en: {
-    title: 'Sehat Nabha',
-    subtitle: 'Your Health, Our Priority',
-    email: 'Email',
-    password: 'Password',
-    login: 'Login',
-    register: 'Create Account',
-    forgotPassword: 'Forgot Password?',
-    language: 'Change Language',
-    loginError: 'Login failed. Please check your credentials.',
-  },
-  pa: {
-    title: 'ਸਿਹਤ ਨਭਾ',
-    subtitle: 'ਤੁਹਾਡੀ ਸਿਹਤ, ਸਾਡੀ ਪਹਿਲੀ ਪਸੰਦ',
-    email: 'ਈਮੇਲ',
-    password: 'ਪਾਸਵਰਡ',
-    login: 'ਲਾਗਇਨ',
-    register: 'ਖਾਤਾ ਬਣਾਓ',
-    forgotPassword: 'ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ?',
-    language: 'ਭਾਸ਼ਾ ਬਦਲੋ',
-    loginError: 'ਲਾਗਇਨ ਅਸਫਲ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਵੇਰਵੇ ਦੀ ਜਾਂਚ ਕਰੋ।',
-  }
-};
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading } = useAuth();
   const { language, toggleLanguage } = useLanguage();
-  const t = translations[language];
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -53,124 +26,153 @@ export default function LoginScreen({ navigation }) {
     try {
       await login(email, password);
     } catch (error) {
-      Alert.alert('Login Error', t.loginError);
+      Alert.alert('Login Failed', error.message);
     }
   };
 
+  const texts = {
+    en: {
+      title: 'Sehat Nabha',
+      subtitle: 'Healthcare for Everyone',
+      email: 'Email',
+      password: 'Password',
+      login: 'Login',
+      register: 'Don\'t have an account? Register',
+      language: 'Language: English',
+    },
+    pa: {
+      title: 'ਸਿਹਤ ਨਭਾ',
+      subtitle: 'ਸਭ ਲਈ ਸਿਹਤ ਸੇਵਾ',
+      email: 'ਈਮੇਲ',
+      password: 'ਪਾਸਵਰਡ',
+      login: 'ਲਾਗ ਇਨ',
+      register: 'ਖਾਤਾ ਨਹੀਂ ਹੈ? ਰਜਿਸਟਰ ਕਰੋ',
+      language: 'ਭਾਸ਼ਾ: ਪੰਜਾਬੀ',
+    },
+  };
+
+  const t = texts[language];
+
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
+          <Text style={styles.languageText}>{t.language}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.content}>
         <Text style={styles.title}>{t.title}</Text>
         <Text style={styles.subtitle}>{t.subtitle}</Text>
+
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder={t.email}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder={t.password}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? 'Loading...' : t.login}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Register')}
+            style={styles.linkButton}
+          >
+            <Text style={styles.linkText}>{t.register}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder={t.email}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder={t.password}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-
-        <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>{t.login}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.linkText}>{t.register}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.languageButton}
-          onPress={toggleLanguage}
-        >
-          <Text style={styles.linkText}>{t.language}</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    backgroundColor: '#f8fafc',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 50,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 16,
+  },
+  languageButton: {
+    padding: 8,
+    backgroundColor: '#e2e8f0',
+    borderRadius: 8,
+  },
+  languageText: {
+    color: '#64748b',
+    fontSize: 14,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     color: '#0ea5e9',
-    marginBottom: 10,
+    textAlign: 'center',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#64748b',
     textAlign: 'center',
+    marginBottom: 32,
   },
   form: {
-    width: '100%',
+    gap: 16,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
+    backgroundColor: 'white',
+    padding: 16,
     borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
     fontSize: 16,
-    backgroundColor: '#f9fafb',
   },
   button: {
     backgroundColor: '#0ea5e9',
+    padding: 16,
     borderRadius: 8,
-    padding: 15,
     alignItems: 'center',
-    marginBottom: 15,
   },
   buttonDisabled: {
-    backgroundColor: '#9ca3af',
+    opacity: 0.6,
   },
   buttonText: {
-    color: '#ffffff',
+    color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
   linkButton: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginTop: 8,
   },
   linkText: {
     color: '#0ea5e9',
-    fontSize: 16,
-  },
-  languageButton: {
-    alignItems: 'center',
-    marginTop: 20,
-    padding: 10,
+    fontSize: 14,
   },
 });
