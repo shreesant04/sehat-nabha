@@ -1,0 +1,21 @@
+import React from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from '../utils/i18n';
+
+const Reports = () => {
+  const { language } = useLanguage();
+  const { t } = useTranslation(language);
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900">{t('reports')}</h1>
+      <div className="bg-white p-8 rounded-lg card-shadow text-center">
+        <p className="text-gray-600">
+          {language === 'pa' ? 'ਰਿਪੋਰਟਾਂ ਦਾ ਪੰਨਾ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ...' : 'Reports page is being built...'}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Reports;
