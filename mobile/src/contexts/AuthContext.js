@@ -5,8 +5,15 @@ import axios from 'axios';
 
 // Firebase config - same as web
 const firebaseConfig = {
-  // Add your Firebase config here
+  apiKey: "AIzaSyAOCd5ZgBgoTHxfkVAgaAK417axK5Y6X_0",
+  authDomain: "sehat-ad588.firebaseapp.com",
+  projectId: "sehat-ad588",
+  storageBucket: "sehat-ad588.firebasestorage.app",
+  messagingSenderId: "42368608858",
+  appId: "1:42368608858:web:8b078d28dbede921fd0663",
+  measurementId: "G-DY4SRMKB19"
 };
+
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
